@@ -1,0 +1,24 @@
+version: '3.3'
+
+services:
+  bitcoin-sv2:
+    build:
+      context: .
+      dockerfile: ./docker/bitcoin-sv2/Dockerfile
+    volumes:
+      - ./configs/bitcoin/bitcoin.conf:/root/.bitcoin/bitcoin.conf
+      - ./configs/sv2-tp/sv2-tp.conf:/root/sv2-tp.conf
+      - bitcoin-data:/root/.bitcoin
+    ports:
+      - "18332:18332"  # Bitcoin RPC port (testnet)
+      - "18333:18333"  # Bitcoin P2P port (testnet)
+      - "8442:8442"    # SV2 port
+    networks:
+      - sv2-network
+
+networks:
+  sv2-network:
+    driver: bridge
+
+volumes:
+  bitcoin-data:
