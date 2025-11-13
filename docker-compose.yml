@@ -1,18 +1,21 @@
-version: '3.3'
-
 services:
   bitcoin-sv2:
     build:
       context: .
       dockerfile: ./docker/bitcoin-sv2/Dockerfile
+    environment:
+      # Extra runtime args appended to the bitcoin command launched by supervisor
+      # Keep empty or harmless toggles only; network selection is controlled by '-testnet4' in supervisord.conf
+      BITCOIND_ARGS: "-printtoconsole"
+      # Extra args for sv2-tp (e.g., "-debug=sv2 -loglevel=sv2:trace -sv2port=8442")
+      SV2TP_ARGS: "-debug=sv2 -loglevel=sv2:trace -sv2port=8442 -sv2bind=0.0.0.0"
     volumes:
       - ./configs/bitcoin/bitcoin.conf:/root/.bitcoin/bitcoin.conf
       - ./configs/sv2-tp/sv2-tp.conf:/root/sv2-tp.conf
       - bitcoin-data:/root/.bitcoin
     ports:
-      - "18332:18332"  # Bitcoin RPC port (testnet)
-      - "18333:18333"  # Bitcoin P2P port (testnet)
-      - "8442:8442"    # SV2 port
+      - "8442:8442"    # SV2 Template Provider port (exposed to host)
+      - "48332:48332"  # Bitcoin SV2 RPC port (exposed to host)
     networks:
       - sv2-network
 
